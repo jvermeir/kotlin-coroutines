@@ -13,31 +13,32 @@ import java.util.logging.Logger
 class Controller {
 
     val counter = AtomicLong()
-    val LOG = Logger.getLogger("Greetinglogger")
+    val LOG = Logger.getLogger("Controller")
 
     @GetMapping("/greeting")
     fun greeting(@RequestParam(value = "name", defaultValue = "World") name: String): String {
+        LOG.info("GET /greeting")
         runBlocking {
             val a = async { getUserDataFromServiceA() }
             val b = async { getUserDataFromServiceB() }
-            println("a: " + a.await() + "\nb: " + b.await())
+            val result = Result(a.await(), b.await())
+            LOG.info (result.toString())
         }
         return "Hello, world"
     }
 
     suspend fun getUserDataFromServiceA():String {
         delay(1000L)
-        println ("A is done")
-        return "dit is A"
+        LOG.info ("A is done after 1 second")
+        return "this is A"
     }
 
     suspend fun getUserDataFromServiceB():String {
         delay(2000L)
-        println ("B is done")
-        return "dit is B"
+        LOG.info ("B is done after 2 seconds")
+        return "this is B"
     }
-
-
 
 }
 
+data class Result(val text1: String, val text2:String)
